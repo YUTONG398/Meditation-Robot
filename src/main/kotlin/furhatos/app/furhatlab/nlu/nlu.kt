@@ -11,7 +11,7 @@ import furhatos.nlu.common.*
 
 
 enum class MeditationType {
-    MORNING, RELAXATION
+    Awakening, Relaxing
 }
 
 class RepeatStepIntent : Intent() {
@@ -20,7 +20,9 @@ class RepeatStepIntent : Intent() {
             "Can you repeat",
             "What was the last step",
             "I didn't hear that",
-            "Repeat"
+            "Repeat",
+            "Say it again",
+            "Go back to the last step"
         )
     }
 }
@@ -30,7 +32,20 @@ class SlowDownIntent : Intent() {
         return arrayListOf(
             "Can you slow down",
             "Go slower",
-            "I need more time"
+            "I need more time",
+            "Talk slower",
+            "Take it easy"
+        )
+    }
+}
+
+class ContinueIntent : Intent() {
+    override fun getExamples(lang: Language): List<String> {
+        return arrayListOf(
+            "Yes",
+            "Continue",
+            "Please continue",
+            "I want to continue the session"
         )
     }
 }
@@ -42,10 +57,58 @@ class ChangeMeditationIntent : Intent() {
         return arrayListOf(
             "Switch to relaxation",
             "I want to change meditation",
-            "Do you have other meditations"
+            "Do you have other meditations",
+            "Can we try awakening",
+            "Start morning meditation",
+            "Can we switch"
         )
     }
 }
+
+class AwakeningMeditationIntent : Intent() {
+    override fun getExamples(lang: Language): List<String> {
+        return arrayListOf(
+            "Awakening",
+            "I want awakening meditation",
+            "I want to try awakening meditation",
+            "Let's do the morning meditation",
+            "Awakening meditation please",
+            "Can we start awakening meditation",
+            "I want to feel more energized",
+            "Start the morning meditation"
+        )
+    }
+}
+
+class RelaxingMeditationIntent : Intent() {
+    override fun getExamples(lang: Language): List<String> {
+        return arrayListOf(
+            "Relaxing",
+            "I want relaxation meditation",
+            "Let's do the relaxing meditation",
+            "I want to try relaxing meditation",
+            "Relaxing meditation please",
+            "Can we start relaxing meditation",
+            "I want to feel more relaxed",
+            "Start the relaxation meditation"
+        )
+    }
+}
+
+class EndSessionIntent : Intent() {
+    override fun getExamples(lang: Language): List<String> {
+        return arrayListOf(
+            "I'm done",
+            "That's all for today",
+            "That's all",
+            "Thank you, I'm finished",
+            "End the session",
+            "I don't want to meditate anymore",
+            "Let's stop"
+        )
+    }
+}
+
 //class Delivery(var receiver : Receivers? = null) : Intent() {
 //    override fun getExamples(lang: Language): List<String> {
 //        return listOf("@receiver", "I have a delivery for @receiver", "I would like to give this package to @receiver", "there is a package for @receiver" , "there is a delivery for @receiver", "I just need to drop a package")

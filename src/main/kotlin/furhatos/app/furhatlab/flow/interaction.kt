@@ -8,46 +8,71 @@ import furhatos.nlu.common.*
 import furhatos.skills.*
 import furhatos.nlu.common.Yes
 
+
 // The Skill starts here
-val Start : State = state(Interaction) {
-// When a new user enters the scene
+val Start: State = state(Interaction) {
     onEntry {
-        furhat.say("Hi there! Feeling stressed? Let's take a moment to relax together.")
-        furhat.say("Find a quiet spot and let's begin.")
-        furhat.say("Right now we only have: Morning Meditation.")
-        goto(StartMeditationState)
+        furhat.say("Hi there! Feeling stressed or tired? Let's take a moment to meditate together.")
+        furhat.gesture(Gestures.Smile(duration = 2.0))
+        furhat.say("You can choose from two types of meditation: Awakening or Relaxing.")
+        furhat.ask("Which one would you like to try?")
+    }
+
+    onResponse<AwakeningMeditationIntent> {
+        furhat.gesture(Gestures.BigSmile, async = true)
+        furhat.say("Great choice! Awakening meditation will help energize your mind and body.")
+        goto(StartAwakeningMeditationState)
+    }
+
+    onResponse<RelaxingMeditationIntent> {
+        furhat.gesture(Gestures.BigSmile, async = true)
+        furhat.say("Wonderful! Relaxing meditation will help you unwind and find calmness.")
+        goto(StartRelaxingMeditationState)
+    }
+
+    onResponse {
+        furhat.gesture(Gestures.ExpressSad, async = true)
+        furhat.say("I'm sorry, I didn't understand that. You can say 'Awakening' or 'Relaxing' to choose.")
+        reentry()
     }
 }
 
-val StartMeditationState : State = state(Interaction) {
+// 1. Awakening Meditation State
+val StartAwakeningMeditationState: State = state(Interaction) {
     onEntry {
-        furhat.say("Good morning! Let's start your day with a refreshing meditation.")
-        furhat.say("Sit comfortably and take a deep breath in... and out. Let's begin.")
-        goto(BreathingExerciseState)
-    }
-}
-
-val BreathingExerciseState : State = state(Interaction) {
-    onEntry {
-        furhat.say("Let's do a breathing exercise.")
-        furhat.say("Breathe in deeply through your nose for four counts...")
-        delay(4000) // 4 seconds
-        furhat.say("Hold it for four counts...")
+        furhat.say("Let's begin your Awakening meditation.")
+        furhat.gesture(Gestures.Smile, async = true)
+        furhat.say("Sit comfortably, take a deep breath in through your nose... and out through your mouth.")
         delay(4000)
-        furhat.say("Now exhale slowly through your mouth for six counts.")
-        delay(6000)
+        goto(AwakeningBreathingExerciseState)
+    }
+}
 
+val AwakeningBreathingExerciseState: State = state(Interaction) {
+    onEntry {
+        furhat.say("First, we'll energize your body with some deep breathing.")
+        furhat.gesture(Gestures.BrowRaise, async = true)
+        furhat.say("Breathe in deeply through your nose for five counts.")
+        delay(5000)
+        furhat.say("Hold for five counts.")
+        delay(5000)
+        furhat.say("Now exhale powerfully through your mouth for seven counts.")
+        delay(7000)
+
+        furhat.say("Let's repeat this three times to fully awaken your body.")
         repeat(2) {
-            furhat.say("Let's repeat.")
+            furhat.gesture(Gestures.BrowRaise, async = true)
             furhat.say("Breathe in...")
-            delay(4000)
+            delay(5000)
             furhat.say("Hold...")
-            delay(4000)
-            furhat.say("Exhale...")
-            delay(6000)
+            delay(5000)
+            furhat.say("Exhale powerfully...")
+            delay(7000)
         }
 
-        goto(PositiveAffirmationState)
+        furhat.gesture(Gestures.Wink, async = true)
+        furhat.say("Well done! You should feel more energized already.")
+        furhat.ask("Would you like to continue or should I repeat the session?")
     }
 
     onResponse<RepeatStepIntent> {
@@ -55,45 +80,143 @@ val BreathingExerciseState : State = state(Interaction) {
         reentry()
     }
 
-    onResponse<SlowDownIntent> {
-        furhat.say("Sure, I'll go slower. We'll take each breath carefully.")
-        delay(2000)
-        reentry()
+    onResponse<ContinueIntent> {
+        furhat.gesture(Gestures.BigSmile, async = true)
+        furhat.say("You're doing great. Let's move to the next step.")
+        goto(AwakeningAffirmationState)
     }
 }
 
-val PositiveAffirmationState : State = state(Interaction) {
+val AwakeningAffirmationState: State = state(Interaction) {
     onEntry {
-        furhat.say("Now, repeat after me:")
-        furhat.say("'Today is a fresh start. I am ready for new opportunities.'")
-        goto(VisualizationState)
+        furhat.say("Now, repeat these affirmations with me:")
+        furhat.gesture(Gestures.BigSmile, async = true)
+        furhat.say("'I am full of energy. I am ready to conquer the day.'")
+        delay(3000)
+        furhat.say("'Today is a fresh start. I embrace new opportunities.'")
+        delay(3000)
+        furhat.say("Take a moment to let these positive thoughts fill you.")
+        delay(5000)
+        furhat.ask("Would you like to continue or should I repeat the session?")
     }
 
     onResponse<RepeatStepIntent> {
         furhat.say("Let's repeat the affirmation:")
-        furhat.say("'Today is a fresh start. I am ready for new opportunities.'")
         reentry()
     }
-}
 
-val VisualizationState : State = state(Interaction) {
-    onEntry {
-        furhat.say("Close your eyes and imagine a warm light surrounding you.")
-        furhat.say("This light fills you with energy and positivity for the day ahead.")
-        furhat.say("Meditation complete. How do you feel?")
+    onResponse<ContinueIntent> {
+        furhat.gesture(Gestures.BigSmile, async = true)
+        furhat.say("We're almost wrapping up. You did an amazing job!")
         goto(EndMeditationState)
     }
 }
 
-val EndMeditationState : State = state(Interaction) {
-    onResponse<ChangeMeditationIntent> {
-        furhat.say("No problem. Let's reset and begin a relaxation meditation.")
-        furhat.say("Take a deep breath in and out as we start.")
-        goto(StartMeditationState)
+// 2. Relaxing Meditation State
+val StartRelaxingMeditationState: State = state(Interaction) {
+    onEntry {
+        furhat.say("Let's begin your Relaxing meditation.")
+        furhat.gesture(Gestures.Nod(duration = 2.0))
+        furhat.say("Find a comfortable position, and take a deep breath in through your nose... and out through your mouth.")
+        delay(4000)
+        goto(RelaxingBreathingExerciseState)
+    }
+}
+
+val RelaxingBreathingExerciseState: State = state(Interaction) {
+    onEntry {
+        furhat.say("We'll start with a gentle breathing exercise to calm your body.")
+        furhat.gesture(Gestures.Thoughtful, async = true)
+        furhat.say("Breathe in deeply through your nose for four counts.")
+        delay(4000)
+        furhat.say("Hold it gently for four counts.")
+        delay(4000)
+        furhat.say("Now exhale slowly and softly through your mouth for six counts.")
+        delay(6000)
+
+        furhat.say("We'll repeat this three times to fully relax your body.")
+        repeat(2) {
+            furhat.gesture(Gestures.Thoughtful, async = true)
+            furhat.say("Breathe in...")
+            delay(4000)
+            furhat.say("Hold gently...")
+            delay(4000)
+            furhat.say("Exhale slowly...")
+            delay(6000)
+        }
+
+        furhat.gesture(Gestures.BigSmile, async = true)
+        furhat.say("Great job. Your body is now in a relaxed state.")
+        furhat.ask("Would you like to continue or should I repeat the session?")
     }
 
     onResponse<RepeatStepIntent> {
-        furhat.say("Which part of the meditation would you like me to repeat?")
+        furhat.say("Of course. Let me guide you through the breathing exercise again.")
+        reentry()
+    }
+
+    onResponse<ContinueIntent> {
+        furhat.gesture(Gestures.BigSmile, async = true)
+        furhat.say("You're doing amazing. Let's move to the next step.")
+        goto(RelaxingVisualizationState)
+    }
+
+
+}
+
+val RelaxingVisualizationState: State = state(Interaction) {
+    onEntry {
+        furhat.say("Close your eyes and imagine a peaceful scene.")
+        furhat.gesture(Gestures.CloseEyes)
+        furhat.say("Visualize a quiet beach with gentle waves lapping at the shore.")
+        delay(5000)
+        furhat.say("Feel the warmth of the sun on your skin and the soft breeze in your hair.")
+        delay(5000)
+        furhat.say("Let this calmness surround you completely.")
+        delay(5000)
+        furhat.say("Take a deep breath and slowly open your eyes when you're ready.")
+        furhat.gesture(Gestures.OpenEyes)
+        furhat.ask("Would you like to continue or should I repeat the session?")
+    }
+
+    onResponse<RepeatStepIntent> {
+        furhat.say("Let's repeat the visualization:")
+        reentry()
+    }
+    onResponse<ContinueIntent> {
+        furhat.gesture(Gestures.BigSmile, async = true)
+        furhat.say("We're almost done here. You’ve done a fantastic job!")
+        goto(EndMeditationState)
+    }
+}
+
+// 3. End Meditation State
+val EndMeditationState : State = state(Interaction) {
+    onEntry {
+        //furhat.say("Meditation complete. How do you feel?")
+        furhat.ask("Would you like to try another meditation, or are you done for now?")
+    }
+
+    onResponse<AwakeningMeditationIntent> {
+        furhat.say("Let's begin the Awakening meditation again.")
+        goto(StartAwakeningMeditationState)
+    }
+
+    onResponse<RelaxingMeditationIntent> {
+        furhat.say("Let's begin the Relaxing meditation again.")
+        goto(StartRelaxingMeditationState)
+    }
+
+    onResponse<EndSessionIntent> {
+        furhat.say("I'm glad I could help you today. Have a wonderful day!")
+        furhat.gesture(Gestures.Smile)
+        goto(Idle)
+    }
+
+    onResponse {
+        furhat.gesture(Gestures.ExpressSad, async = true)
+        furhat.say("I'm sorry, I didn't understand that. You can choose Awakening, Relaxing, or say you're done.")
+        reentry()
     }
 }
 
