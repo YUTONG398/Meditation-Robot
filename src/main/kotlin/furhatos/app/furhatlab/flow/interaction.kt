@@ -8,6 +8,28 @@ import furhatos.nlu.common.*
 import furhatos.skills.*
 import furhatos.nlu.common.Yes
 
+// Import audio control library
+import java.io.File
+import javax.sound.sampled.AudioSystem
+import javax.sound.sampled.Clip
+
+////
+// Audio control object
+var audioClip: Clip? = null
+
+fun playAudio(fileName: String) {
+    val audioInputStream = AudioSystem.getAudioInputStream(File(fileName))
+    audioClip = AudioSystem.getClip()
+    audioClip?.open(audioInputStream)
+    audioClip?.start()
+}
+
+fun stopAudio() {
+    audioClip?.stop()
+    audioClip?.close()
+    audioClip = null
+}
+////
 
 // The Skill starts here
 val Start: State = state(Interaction) {
@@ -50,6 +72,7 @@ val StartAwakeningMeditationState: State = state(Interaction) {
 
 val AwakeningBreathingExerciseState: State = state(Interaction) {
     onEntry {
+        playAudio("D:\\01 FILE\\Meditation-Robot\\src\\main\\resources\\sound\\wave.wav") // Start playing audio
         furhat.say("First, we'll energize your body with some deep breathing.")
         furhat.gesture(Gestures.BrowRaise, async = true)
         furhat.say("Breathe in deeply through your nose for five counts.")
@@ -115,6 +138,7 @@ val AwakeningAffirmationState: State = state(Interaction) {
 // 2. Relaxing Meditation State
 val StartRelaxingMeditationState: State = state(Interaction) {
     onEntry {
+        playAudio("D:\\01 FILE\\Meditation-Robot\\src\\main\\resources\\sound\\perfect-beauty-191271.wav") // Start playing audio
         furhat.say("Let's begin your Relaxing meditation.")
         furhat.gesture(Gestures.Nod(duration = 2.0))
         furhat.say("Find a comfortable position, and take a deep breath in through your nose... and out through your mouth.")
@@ -186,6 +210,7 @@ val RelaxingVisualizationState: State = state(Interaction) {
     onResponse<ContinueIntent> {
         furhat.gesture(Gestures.BigSmile, async = true)
         furhat.say("We're almost done here. You’ve done a fantastic job!")
+        stopAudio() // Stop playing audio
         goto(EndMeditationState)
     }
 }
@@ -194,6 +219,8 @@ val RelaxingVisualizationState: State = state(Interaction) {
 val EndMeditationState : State = state(Interaction) {
     onEntry {
         //furhat.say("Meditation complete. How do you feel?")
+
+
         furhat.ask("Would you like to try another meditation, or are you done for now?")
     }
 
