@@ -73,6 +73,7 @@ class AwakeningMeditationIntent : Intent() {
             "I want to try awakening meditation",
             "Let's do the morning meditation",
             "Awakening meditation please",
+            "Can I try awakening meditation",
             "Can we start awakening meditation",
             "I want to feel more energized",
             "Start the morning meditation"
@@ -88,6 +89,7 @@ class RelaxingMeditationIntent : Intent() {
             "Let's do the relaxing meditation",
             "I want to try relaxing meditation",
             "Relaxing meditation please",
+            "Can I try relaxing meditation",
             "Can we start relaxing meditation",
             "I want to feel more relaxed",
             "Start the relaxation meditation"

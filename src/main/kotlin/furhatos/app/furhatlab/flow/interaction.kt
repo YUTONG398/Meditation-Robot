@@ -8,6 +8,27 @@ import furhatos.nlu.common.*
 import furhatos.skills.*
 import furhatos.nlu.common.Yes
 
+// Import audio control library
+import java.io.File
+import javax.sound.sampled.AudioSystem
+import javax.sound.sampled.Clip
+
+////
+// Audio control object
+var audioClip: Clip? = null
+
+fun playAudio(fileName: String) {
+    val audioInputStream = AudioSystem.getAudioInputStream(File(fileName))
+    audioClip = AudioSystem.getClip()
+    audioClip?.open(audioInputStream)
+    audioClip?.start()
+}
+
+fun stopAudio() {
+    audioClip?.stop()
+    audioClip?.close()
+    audioClip = null
+}
 
 // The Skill starts here
 val Start: State = state(Interaction) {
@@ -40,6 +61,9 @@ val Start: State = state(Interaction) {
 // 1. Awakening Meditation State
 val StartAwakeningMeditationState: State = state(Interaction) {
     onEntry {
+        val filePath: String = javaClass.getResource("/sound/awakening-bkg-music.wav")?.path
+            ?: throw IllegalArgumentException("Audio file not found")
+        playAudio(filePath) // Start playing audio
         furhat.say("Let's begin your Awakening meditation.")
         furhat.gesture(Gestures.Smile, async = true)
         furhat.say("Sit comfortably, take a deep breath in through your nose... and out through your mouth.")
@@ -115,6 +139,9 @@ val AwakeningAffirmationState: State = state(Interaction) {
 // 2. Relaxing Meditation State
 val StartRelaxingMeditationState: State = state(Interaction) {
     onEntry {
+        val filePath: String = javaClass.getResource("/sound/relaxing-bkg-music.wav")?.path
+            ?: throw IllegalArgumentException("Audio file not found")
+        playAudio(filePath) // Start playing audio
         furhat.say("Let's begin your Relaxing meditation.")
         furhat.gesture(Gestures.Nod(duration = 2.0))
         furhat.say("Find a comfortable position, and take a deep breath in through your nose... and out through your mouth.")
@@ -194,6 +221,7 @@ val RelaxingVisualizationState: State = state(Interaction) {
 val EndMeditationState : State = state(Interaction) {
     onEntry {
         //furhat.say("Meditation complete. How do you feel?")
+        stopAudio() // Stop playing audio
         furhat.ask("Would you like to try another meditation, or are you done for now?")
     }
 
